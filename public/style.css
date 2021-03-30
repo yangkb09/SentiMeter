@@ -1,5 +1,7 @@
 body {
-  font-family: sans-serif;
+  font-family: 'Palatino', sans-serif;
+  background-color: #8e9aaf;
+  color: white;
 }
 
 a {
@@ -10,12 +12,72 @@ label {
   display: block;
 }
 
+input[type='text'] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+input[type='text']:focus {
+  background-color: #feeafa;
+}
+
+.card {
+  /* Add shadows to create the "card" effect */
+  padding: 20px 30px;
+  height: auto;
+  display: flex;
+  width: 70%;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  margin: 10px;
+  transition: 0.2s;
+  border-radius: 5px;
+  justify-content: space-between;
+  font-size: 25px;
+  background-color: #cbc0d3;
+}
+
+/* On mouse-over, add a deeper shadow */
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Add some padding inside the card container */
+.container {
+  padding: 2px 16px;
+}
+
+nav {
+  display: flex;
+  justify-content: space-around;
+  background-color: #efd3d7;
+  align-items: flex-end;
+  margin: 1em;
+  color: white;
+  font-size: 17px;
+  border-radius: 5px 5px 0 0;
+}
+
 nav a {
   display: inline-block;
+  color: white;
   margin: 1em;
 }
 
 form div {
   margin: 1em;
   display: inline-block;
+}
+
+button {
+  border: none;
+  outline: 0;
+  padding: 12px;
+  color: white;
+  background-color: #b6e5fb;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 5px;
 }
