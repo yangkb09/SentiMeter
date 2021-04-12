@@ -23,6 +23,7 @@ export const _submitForm = text => async dispatch => {
 export const _getScore = () => async dispatch => {
   try {
     const {data} = await axios.get('/api/home')
+    console.log('THIS IS DATA', data)
     dispatch(fetchScore(data))
   } catch (err) {
     console.log(err)

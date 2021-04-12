@@ -1,6 +1,6 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {_submitForm, _getScore} from '../store/form'
+import {_submitForm} from '../store/form'
 
 export class TextForm extends React.Component {
   constructor() {
@@ -11,9 +11,7 @@ export class TextForm extends React.Component {
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
   }
-  componentDidMount() {
-    this.props.getScore()
-  }
+
   handleChange(event) {
     this.setState({
       [event.target.name]: event.target.value
@@ -22,7 +20,6 @@ export class TextForm extends React.Component {
   handleSubmit(event) {
     event.preventDefault()
     this.props.postForm(this.state)
-    // this.props.getScore()
     this.setState({
       formText: ''
     })
@@ -45,19 +42,6 @@ export class TextForm extends React.Component {
             </div>
           </form>
         </div>
-        <div className="card">
-          Analysis
-          {console.log('this.props ', this.props)}
-          {console.log('this.props.text ', this.props.text)}
-          {console.log('this.state ', this.state)}
-          {/* <div className="container">
-            {this.props.form.map(oneForm => {
-              return (
-                <div key={oneForm.id}>Sentiment Score: {oneForm.score}</div>
-              )
-            })}
-          </div> */}
-        </div>
       </div>
     )
   }
@@ -65,15 +49,13 @@ export class TextForm extends React.Component {
 
 const mapState = state => {
   return {
-    formText: state.formText,
-    score: state.score
+    formText: state.formText
   }
 }
 
 const mapDispatch = dispatch => {
   return {
-    postForm: text => dispatch(_submitForm(text)),
-    getScore: () => dispatch(_getScore())
+    postForm: text => dispatch(_submitForm(text))
   }
 }
 

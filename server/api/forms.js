@@ -5,6 +5,7 @@ router.get('/', async (req, res, next) => {
   try {
     const scores = await Form.findAll({
       // where: {formText: req.body.formText}
+      attributes: ['id', 'score', 'magnitude']
     })
     res.send(scores)
   } catch (err) {
@@ -48,14 +49,5 @@ router.post('/', async (req, res, next) => {
     next(err)
   }
 })
-
-// router.post('/', (req, res, next) => {
-//   try {
-//     Form.create(req.body)
-//     .then(text => res.json(text))
-//   } catch (err) {
-//     next(err)
-//   }
-// })
 
 module.exports = router
