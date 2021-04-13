@@ -4,7 +4,6 @@ const Form = require('../db/models/form')
 router.get('/', async (req, res, next) => {
   try {
     const scores = await Form.findAll({
-      // where: {formText: req.body.formText}
       attributes: ['id', 'score', 'magnitude']
     })
     res.send(scores)
