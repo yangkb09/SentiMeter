@@ -1,5 +1,15 @@
 const router = require('express').Router()
 const Form = require('../db/models/form')
+const Twitter = require('twitter-v2') //An asynchronous client library for the Twitter REST and Streaming API's.
+const rp = require('request-promise')
+
+const client = new Twitter({
+  consumer_key: process.env.TWITTER_API_KEY,
+  consumer_secret: process.env.TWITTER_SECRET_KEY,
+  access_token_key: process.env.TWITTER_ACCESS_TOKEN,
+  access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
+  bearer_token: process.env.TWITTER_BEARER_TOKEN
+})
 
 router.get('/', async (req, res, next) => {
   try {
@@ -23,8 +33,11 @@ router.post('/', async (req, res, next) => {
       projectId: 'sentiment-analys-1611430622359'
     })
 
-    // The text to analyze
+    // The text to analyze (username)
+    //might need separate helper functions. can do twitter stuff after ln 28
     const text = req.body.formText
+
+    //TWITTER STUFF
 
     const document = {
       content: text,

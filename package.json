@@ -63,7 +63,8 @@
     "redux-thunk": "^2.3.0",
     "sequelize": "^5.22.3",
     "socket.io": "^2.2.0",
-    "twitter-lite": "^1.1.0"
+    "twitter-lite": "^1.1.0",
+    "twitter-v2": "^1.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.3",
