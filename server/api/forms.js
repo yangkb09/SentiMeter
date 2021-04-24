@@ -1,9 +1,9 @@
 const router = require('express').Router()
 const Form = require('../db/models/form')
-const Twitter = require('twitter-v2') //An asynchronous client library for the Twitter REST and Streaming API's.
-const rp = require('request-promise')
+const Twitter = require('twitter') //An asynchronous client library for the Twitter REST and Streaming API's.
+// const rp = require('request-promise')
 
-const client = new Twitter({
+const twitterClient = new Twitter({
   consumer_key: process.env.TWITTER_API_KEY,
   consumer_secret: process.env.TWITTER_SECRET_KEY,
   access_token_key: process.env.TWITTER_ACCESS_TOKEN,
@@ -36,8 +36,42 @@ router.post('/', async (req, res, next) => {
     // The text to analyze (username)
     //might need separate helper functions. can do twitter stuff after ln 28
     const text = req.body.formText
+    const twitterUsername = req.body.formText
 
-    //TWITTER STUFF
+    //Getting Twitter data (user by un, then user's tweet timeline)
+    twitterClient.get(
+      '/users/show.json',
+      {screen_name: twitterUsername},
+      function(error, profile, response) {
+        try {
+          console.log('TWITTER PROFILE: ', profile)
+          const profileImg = profile.profile_image_url.replace(/_normal/, '')
+          const profileBanner = profile.profile_banner_url
+          // twitterClient.get(
+          //   '/statuses/user_timeline.json',
+          //   {screen_name: req.body.userName, count: 200},
+          //   function(error, tweets, response) {
+          //     try {
+          //       let holder = ''
+          //       for (let i = 0; i < tweets.length; i++) {
+          //         holder += tweets[i].text
+          //       }
+          //       let cleanedTweets = holder.replace(
+          //         /(?:https?|ftp):\/\/[\n\S]+/g,
+          //         ''
+          //       )
+          //       console.log('TWEETS: ', tweets)
+          //       console.log('CLEANED TWEETS: ', cleanedTweets)
+          //     } catch (error) {
+          //       throw error
+          //     }
+          //   }
+          // )
+        } catch (error) {
+          throw error
+        }
+      }
+    )
 
     const document = {
       content: text,

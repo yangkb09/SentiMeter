@@ -1,7 +1,18 @@
 {
   "root": true,
-  "extends": ["fullstack", "prettier", "prettier/react"],
-  "rules": {
-    "semi": 0
+  "settings": {
+    "react": {
+      "version": "detect" // React version. "detect" automatically picks the version you have installed.
+    },
+    "extends": [
+      "fullstack",
+      "prettier",
+      "prettier/react",
+      "eslint:recommended",
+      "plugin:react/recommended"
+    ],
+    "rules": {
+      "semi": 0
+    }
   }
 }
