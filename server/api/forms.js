@@ -8,7 +8,7 @@ const twitterClient = new Twitter({
   consumer_secret: process.env.TWITTER_SECRET_KEY,
   access_token_key: process.env.TWITTER_ACCESS_TOKEN,
   access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
-  bearer_token: process.env.TWITTER_BEARER_TOKEN
+  // bearer_token: process.env.TWITTER_BEARER_TOKEN
 })
 
 router.get('/', async (req, res, next) => {
@@ -38,7 +38,7 @@ router.post('/', async (req, res, next) => {
     const text = req.body.formText
     const twitterUsername = req.body.formText
 
-    //Getting Twitter data (user by un, then user's tweet timeline)
+    //GET Twitter data (user by un, then user's tweet timeline)
     twitterClient.get(
       '/users/show.json',
       {screen_name: twitterUsername},
@@ -47,26 +47,32 @@ router.post('/', async (req, res, next) => {
           console.log('TWITTER PROFILE: ', profile)
           const profileImg = profile.profile_image_url.replace(/_normal/, '')
           const profileBanner = profile.profile_banner_url
-          // twitterClient.get(
-          //   '/statuses/user_timeline.json',
-          //   {screen_name: req.body.userName, count: 200},
-          //   function(error, tweets, response) {
-          //     try {
-          //       let holder = ''
-          //       for (let i = 0; i < tweets.length; i++) {
-          //         holder += tweets[i].text
-          //       }
-          //       let cleanedTweets = holder.replace(
-          //         /(?:https?|ftp):\/\/[\n\S]+/g,
-          //         ''
-          //       )
-          //       console.log('TWEETS: ', tweets)
-          //       console.log('CLEANED TWEETS: ', cleanedTweets)
-          //     } catch (error) {
-          //       throw error
-          //     }
-          //   }
-          // )
+
+          //GET Twitter user's tweet timeline (tweets)
+          //maybe add include_rts: false
+          //callback based async func, need to pass in func to get back info arguments (error, data if it passes)
+          //don't need try catch, i won't know if it fails; throw error (return afterwards, or an if else)
+          twitterClient.get(
+            '/statuses/user_timeline.json',
+            {screen_name: twitterUsername, count: 3},
+            function(error, tweets, response) {
+              try {
+                let holder = ''
+                for (let i = 0; i < tweets.length; i++) {
+                  holder += tweets[i].text
+                }
+                let cleanedTweets = holder.replace(
+                  /(?:https?|ftp):\/\/[\n\S]+/g,
+                  ''
+                )
+                console.log('TWEETS: ', tweets)
+                console.log('CLEANED TWEETS: ', cleanedTweets)
+              } catch (error) {
+                // throw error
+                console.log('ERR GET TIMELINE', error)
+              }
+            }
+          )
         } catch (error) {
           throw error
         }
