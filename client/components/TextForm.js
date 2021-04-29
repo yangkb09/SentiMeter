@@ -30,10 +30,10 @@ export class TextForm extends React.Component {
         <div className="card">
           <form onSubmit={this.handleSubmit}>
             <div className="container">
-              <label htmlFor="formText">Text:</label>
+              <label htmlFor="formText">Twitter Handle:</label>
               <input
                 type="text"
-                placeholder="Write something.."
+                placeholder="twitterUserImAboutToSpyOn"
                 name="formText"
                 value={this.state.formText}
                 onChange={this.handleChange}

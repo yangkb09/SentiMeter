@@ -7,7 +7,7 @@ const twitterClient = new Twitter({
   consumer_key: process.env.TWITTER_API_KEY,
   consumer_secret: process.env.TWITTER_SECRET_KEY,
   access_token_key: process.env.TWITTER_ACCESS_TOKEN,
-  access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
+  access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
   // bearer_token: process.env.TWITTER_BEARER_TOKEN
 })
 
@@ -33,70 +33,101 @@ router.post('/', async (req, res, next) => {
       projectId: 'sentiment-analys-1611430622359'
     })
 
-    // The text to analyze (username)
-    //might need separate helper functions. can do twitter stuff after ln 28
-    const text = req.body.formText
+    // The text to analyze (should be users cleaned tweets)
+    let text = req.body.formText
+    console.log('REQ.BODY: ', req.body)
     const twitterUsername = req.body.formText
+    let cleanedTweets;
 
     //GET Twitter data (user by un, then user's tweet timeline)
     twitterClient.get(
       '/users/show.json',
       {screen_name: twitterUsername},
       function(error, profile, response) {
-        try {
+        if (error) {
+          throw error;
+        } else {
           console.log('TWITTER PROFILE: ', profile)
           const profileImg = profile.profile_image_url.replace(/_normal/, '')
           const profileBanner = profile.profile_banner_url
 
           //GET Twitter user's tweet timeline (tweets)
-          //maybe add include_rts: false
-          //callback based async func, need to pass in func to get back info arguments (error, data if it passes)
-          //don't need try catch, i won't know if it fails; throw error (return afterwards, or an if else)
           twitterClient.get(
             '/statuses/user_timeline.json',
-            {screen_name: twitterUsername, count: 3},
-            function(error, tweets, response) {
-              try {
-                let holder = ''
-                for (let i = 0; i < tweets.length; i++) {
-                  holder += tweets[i].text
-                }
-                let cleanedTweets = holder.replace(
-                  /(?:https?|ftp):\/\/[\n\S]+/g,
-                  ''
-                )
-                console.log('TWEETS: ', tweets)
-                console.log('CLEANED TWEETS: ', cleanedTweets)
-              } catch (error) {
-                // throw error
-                console.log('ERR GET TIMELINE', error)
+            {screen_name: twitterUsername, count: 200, include_rts: false},
+            async function(error, tweets, response) {
+              if (error) {
+                throw error;
+              } else {
+                  let holder = ''
+                  for (let i = 0; i < tweets.length; i++) {
+                    holder += tweets[i].text
+                  }
+                  cleanedTweets = holder.replace(
+                    /(?:https?|ftp):\/\/[\n\S]+/g,
+                    ''
+                  )
+                  console.log('TWEETS: ', tweets)
+                  console.log('cleanedTweets inside twitter get: ', cleanedTweets)
+                  console.log('TYPEOF CLEANED TWEETS: ', typeof text)
+
+                  const document = {
+                    content: cleanedTweets,
+                    type: 'PLAIN_TEXT'
+                  }
+
+                  // Detects the sentiment of the text
+                  const [result] = await client.analyzeSentiment({document: document})
+                  const sentiment = result.documentSentiment
+
+                  console.log(`Text: ${cleanedTweets}`)
+                  console.log(`Sentiment score: ${sentiment.score}`)
+                  console.log(`Sentiment magnitude: ${sentiment.magnitude}`)
+
+                  //QUEST: how to rewrite bottom line? if i dont need to send data to db, i dont want to
+                  Form.create({
+                    formText: cleanedTweets,
+                    score: sentiment.score,
+                    magnitude: sentiment.magnitude
+                  }).then(stuff => res.json(stuff))
               }
             }
           )
-        } catch (error) {
-          throw error
         }
       }
     )
 
-    const document = {
-      content: text,
-      type: 'PLAIN_TEXT'
-    }
+    //text's value isn't getting rewritten on ln66, it's val remains what's on ln 37
 
-    // Detects the sentiment of the text
-    const [result] = await client.analyzeSentiment({document: document})
-    const sentiment = result.documentSentiment
+    // const document = {
+    //   content: text,
+    //   type: 'PLAIN_TEXT'
+    // }
+    // console.log('CLEANEDTWEETS oUTSIDE GET: ', cleanedTweets)
+    // console.log('DOCUMENT: ', document)
 
-    console.log(`Text: ${text}`)
-    console.log(`Sentiment score: ${sentiment.score}`)
-    console.log(`Sentiment magnitude: ${sentiment.magnitude}`)
+    // // const document = {
+    // //   content: cleanedTweets,
+    // //   type: 'PLAIN_TEXT'
+    // // }
 
-    Form.create({
-      formText: text,
-      score: sentiment.score,
-      magnitude: sentiment.magnitude
-    }).then(stuff => res.json(stuff))
+    // // Detects the sentiment of the text
+    // const [result] = await client.analyzeSentiment({document: document})
+    // const sentiment = result.documentSentiment
+
+    // console.log(`Text: ${text}`)
+    // console.log(`Sentiment score: ${sentiment.score}`)
+    // console.log(`Sentiment magnitude: ${sentiment.magnitude}`)
+
+    // // console.log(`Text: ${cleanedTweets}`)
+    // // console.log(`Sentiment score: ${sentiment.score}`)
+    // // console.log(`Sentiment magnitude: ${sentiment.magnitude}`)
+
+    // Form.create({
+    //   formText: text, //this may be twitter UN now
+    //   score: sentiment.score,
+    //   magnitude: sentiment.magnitude
+    // }).then(stuff => res.json(stuff))
   } catch (err) {
     next(err)
   }
